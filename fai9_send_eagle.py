@@ -27,6 +27,7 @@ class Fai9SendEagle:
         return {
             "required": {
                 "images": ("IMAGE",),
+                "format": (["webp", "png", "jpg"],),
                 "lossless_webp": (["lossy", "lossless"],),
                 "compression": (
                     "INT",
@@ -52,6 +53,7 @@ class Fai9SendEagle:
     def add_item(
         self,
         images,
+        format="webp",
         compression=80,
         lossless_webp="lossy",
         send_prompt=False,
@@ -116,9 +118,9 @@ class Fai9SendEagle:
 
             width, height = img.size
             if send_prompt:
-                filename = f"{util.get_datetime_str_msec()}-{fn_modelname}-Smp-{fn_num_of_smp}-{fn_seed}-{width}-{height}.webp"
+                filename = f"{util.get_datetime_str_msec()}-{fn_modelname}-Smp-{fn_num_of_smp}-{fn_seed}-{width}-{height}.{format}"
             else:
-                filename = f"{util.get_datetime_str_msec()}-{width}-{height}.webp"
+                filename = f"{util.get_datetime_str_msec()}-{width}-{height}.{format}"
 
             filefullpath = os.path.join(full_output_folder, filename)
             img.save(filefullpath, quality=compression, exif=imgexif, lossless=lossless)
