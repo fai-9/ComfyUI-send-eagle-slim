@@ -112,10 +112,6 @@ class Fai9SendEagle:
             i = 255.0 * image.cpu().numpy()
             img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
 
-            # get the (empty) Exif data of the generated Picture
-            emptyExifData = img.getexif()
-            imgexif = util.get_exif_from_prompt(emptyExifData, prompt, extra_pnginfo)
-
             width, height = img.size
             if send_prompt:
                 filename = f"{util.get_datetime_str_msec()}-{fn_modelname}-Smp-{fn_num_of_smp}-{fn_seed}-{width}-{height}.{format}"
@@ -123,7 +119,19 @@ class Fai9SendEagle:
                 filename = f"{util.get_datetime_str_msec()}-{width}-{height}.{format}"
 
             filefullpath = os.path.join(full_output_folder, filename)
-            img.save(filefullpath, quality=compression, exif=imgexif, lossless=lossless)
+
+            if format == "webp":
+                # get the (empty) Exif data of the generated Picture
+                emptyExifData = img.getexif()
+                imgexif = util.get_exif_from_prompt(emptyExifData, prompt, extra_pnginfo)
+
+                img.save(filefullpath, quality=compression, exif=imgexif, lossless=lossless, optimize=True)
+            elif format == "png":
+                pnginfo = util.get_pnginfo_from_prompt(prompt, extra_pnginfo)
+
+                img.save(filefullpath, pnginfo=pnginfo, optimize=True)
+            else:
+                img.save(filefullpath, quality=compression, lossless=lossless, optimize=True)
 
             item = {"path": filefullpath, "name": filename}
 
