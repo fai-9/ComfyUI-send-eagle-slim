@@ -3,6 +3,7 @@ import json
 import traceback
 import re
 from PIL import Image
+from PIL.PngImagePlugin import PngInfo
 from datetime import datetime
 
 
@@ -81,6 +82,27 @@ class util:
             imgexif[0x010E] = "Workflow:" + workflowmetadata
 
         return imgexif
+
+    @staticmethod
+    def get_pnginfo_from_prompt(
+        prompt, extra_pnginfo
+    ) -> PngInfo:
+        """
+        Generate png information from hidden items "prompt" and "extra_pnginfo
+        """
+        pnginfo = PngInfo()
+
+        # Add PromptString
+        if prompt is not None:
+            promptstr = "".join(json.dumps(prompt))
+            pnginfo.add_text("parameters", promptstr)
+
+        # Add ExtraPngInfo
+        if extra_pnginfo is not None:
+            for x in extra_pnginfo:
+                pnginfo.add_text(x, (json.dumps(extra_pnginfo[x])))
+
+        return pnginfo
 
     @staticmethod
     def get_prompt_tags(prompt_text: str) -> list:
