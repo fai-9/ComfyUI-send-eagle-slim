@@ -39,8 +39,13 @@ class Fai9SendEagle:
                 ),
             },
             "optional": {
-                "positive": ("*", ),
-                "negative": ("*", ),
+                "positive": ("STRING", {"default": ""}),
+                "negative": ("STRING", {"default": ""}),
+                "model_name": ("STRING", {"default": ""}),
+                "steps": ("*",),
+                "cfg": ("*",),
+                "sampler_name": ("*",),
+                "scheduler": ("*",),
             },
             "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
         }
@@ -60,6 +65,11 @@ class Fai9SendEagle:
         positive=None,
         negative=None,
         prompt=None,
+        model_name=None,
+        steps=None,
+        cfg=None,
+        sampler_name=None,
+        scheduler=None,
         extra_pnginfo=None,
     ):
         # Force write prompt and extra_pnginfo to log (for debug)
@@ -70,8 +80,13 @@ class Fai9SendEagle:
             try:
                 gen_data = PromptInfoExtractor(
                     prompt,
-                    str(positive) if positive is not None else None,
-                    str(negative) if negative is not None else None
+                    positive if positive else None,
+                    negative if negative else None,
+                    model_name if model_name else None,
+                    int(steps) if steps is not None else None,
+                    float(cfg) if cfg is not None else None,
+                    str(sampler_name) if sampler_name is not None else None,
+                    str(scheduler) if scheduler is not None else None
                 )
 
                 Eagle_annotation_txt = gen_data.formatted_annotation()

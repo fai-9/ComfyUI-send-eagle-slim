@@ -10,7 +10,7 @@ def dprint(str):
 
 
 class PromptInfoExtractor:
-    def __init__(self, prompt, positive=None, negative=None, config_filepath=None):
+    def __init__(self, prompt, positive=None, negative=None, model_name=None, steps=None, cfg=None, sampler_name=None, scheduler=None, config_filepath=None):
         """constructor
 
         Args:
@@ -21,6 +21,11 @@ class PromptInfoExtractor:
         self._prompt = prompt
         self._positive = positive
         self._negative = negative
+        self._model_name = model_name
+        self._steps = steps
+        self._cfg = cfg
+        self._sampler_name = sampler_name
+        self._scheduler = scheduler
 
         if DEBUG:
             self._show_data()
@@ -56,15 +61,15 @@ class PromptInfoExtractor:
 
         key, ksampler_item = ksampler_items[0]
 
-        model_name = self.extract_model_name(ksampler_item)
+        model_name = self._model_name if self._model_name is not None else self.extract_model_name(ksampler_item)
         latent_image_info = self.extract_latent_image_info(ksampler_item)
         prompt_text = self.extract_prompt_info()
 
         info_dict = {
-            "steps": ksampler_item["inputs"]["steps"],
-            "sampler_name": ksampler_item["inputs"]["sampler_name"],
-            "scheduler": ksampler_item["inputs"]["scheduler"],
-            "cfg": ksampler_item["inputs"]["cfg"],
+            "steps": self._steps if self._steps is not None else  ksampler_item["inputs"]["steps"],
+            "sampler_name": self._sampler_name if self._sampler_name is not None else ksampler_item["inputs"]["sampler_name"],
+            "scheduler": self._scheduler if self._scheduler is not None else ksampler_item["inputs"]["scheduler"],
+            "cfg": self._cfg if self._cfg is not None else ksampler_item["inputs"]["cfg"],
             "seed": ksampler_item["inputs"].get(
                 "seed", ksampler_item["inputs"].get("noise_seed", None)
             ),
