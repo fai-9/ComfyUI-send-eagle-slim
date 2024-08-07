@@ -7,4 +7,5 @@ NODE_CLASS_MAPPINGS = {
     "Send Eagle with text": SendEagleWithText,
     "Send Image to Eagle (fai-9)": Fai9SendEagle,
 }
-__all__ = ["NODE_CLASS_MAPPINGS"]
+WEB_DIRECTORY = "./web"
+__all__ = ["NODE_CLASS_MAPPINGS", None, "WEB_DIRECTORY"]
