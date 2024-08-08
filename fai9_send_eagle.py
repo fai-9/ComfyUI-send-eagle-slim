@@ -42,6 +42,7 @@ class Fai9SendEagle:
                 "positive": ("STRING", {"default": ""}),
                 "negative": ("STRING", {"default": ""}),
                 "model_name": ("STRING", {"default": ""}),
+                "seed": ("*",),
                 "steps": ("*",),
                 "cfg": ("*",),
                 "sampler_name": ("*",),
@@ -66,6 +67,7 @@ class Fai9SendEagle:
         negative=None,
         prompt=None,
         model_name=None,
+        seed=None,
         steps=None,
         cfg=None,
         sampler_name=None,
@@ -77,16 +79,20 @@ class Fai9SendEagle:
             util.write_prompt(prompt, extra_pnginfo)
 
         if send_prompt:
+            img = Image.fromarray(np.clip(255.0 * images[0].cpu().numpy(), 0, 255).astype(np.uint8))
             try:
                 gen_data = PromptInfoExtractor(
                     prompt,
                     positive if positive else None,
                     negative if negative else None,
                     model_name if model_name else None,
+                    int(seed) if seed is not None else None,
                     int(steps) if steps is not None else None,
                     float(cfg) if cfg is not None else None,
                     str(sampler_name) if sampler_name is not None else None,
-                    str(scheduler) if scheduler is not None else None
+                    str(scheduler) if scheduler is not None else None,
+                    img.width,
+                    img.height
                 )
 
                 Eagle_annotation_txt = gen_data.formatted_annotation()
