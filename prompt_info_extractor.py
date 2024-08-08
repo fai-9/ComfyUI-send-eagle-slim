@@ -10,7 +10,21 @@ def dprint(str):
 
 
 class PromptInfoExtractor:
-    def __init__(self, prompt, positive=None, negative=None, model_name=None, steps=None, cfg=None, sampler_name=None, scheduler=None, config_filepath=None):
+    def __init__(
+        self,
+        prompt,
+        positive=None,
+        negative=None,
+        model_name=None,
+        seed=None,
+        steps=None,
+        cfg=None,
+        sampler_name=None,
+        scheduler=None,
+        width=None,
+        height=None,
+        config_filepath=None
+    ):
         """constructor
 
         Args:
@@ -22,10 +36,13 @@ class PromptInfoExtractor:
         self._positive = positive
         self._negative = negative
         self._model_name = model_name
+        self._seed = seed
         self._steps = steps
         self._cfg = cfg
         self._sampler_name = sampler_name
         self._scheduler = scheduler
+        self._width = width
+        self._height = height
 
         if DEBUG:
             self._show_data()
@@ -66,16 +83,16 @@ class PromptInfoExtractor:
         prompt_text = self.extract_prompt_info()
 
         info_dict = {
-            "steps": self._steps if self._steps is not None else  ksampler_item["inputs"]["steps"],
+            "steps": self._steps if self._steps is not None else ksampler_item["inputs"]["steps"],
             "sampler_name": self._sampler_name if self._sampler_name is not None else ksampler_item["inputs"]["sampler_name"],
             "scheduler": self._scheduler if self._scheduler is not None else ksampler_item["inputs"]["scheduler"],
             "cfg": self._cfg if self._cfg is not None else ksampler_item["inputs"]["cfg"],
-            "seed": ksampler_item["inputs"].get(
+            "seed": self._seed if self._seed is not None else ksampler_item["inputs"].get(
                 "seed", ksampler_item["inputs"].get("noise_seed", None)
             ),
             "model_name": model_name,
-            "width": latent_image_info["inputs"]["width"],
-            "height": latent_image_info["inputs"]["height"],
+            "width": self._width if self._width is not None else latent_image_info["inputs"]["width"],
+            "height": self._height if self._height is not None else latent_image_info["inputs"]["height"],
         }
         if "prompt" in prompt_text:
             info_dict["prompt"] = prompt_text["prompt"]
